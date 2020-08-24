@@ -4,8 +4,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-import rpy2.robjects as robjects
-import rpy2.robjects.packages as rpackages
+# import rpy2.robjects as robjects
+# import rpy2.robjects.packages as rpackages
 
 try:
    google_colab
@@ -19,7 +19,7 @@ except NameError:
 	# Provide quantiles for the distribution
 
 	# family can be 'normal', 'lognormal', 'metalog'
-	family = 'lognormal'
+	family = 'metalog'
 
 	# Bounds for metalog
 	# The metalog distribution can be unbounded, or bounded to the left, or the right, or both
@@ -93,118 +93,133 @@ if family == 'metalog':
 		boundedness = 'u'
 		bounds = []
 
-	s = time.time()
-	# import R's utility package
-	utils = rpackages.importr('utils')
+	# s = time.time()
+	# # import R's utility package
+	# utils = rpackages.importr('utils')
+	#
+	# # select a mirror for R packages
+	# utils.chooseCRANmirror(ind=1)  # select the first mirror in the list
+	#
+	# # install and import rmetalog
+	# packnames = ['rmetalog']
+	# names_to_install = [x for x in packnames if not rpackages.isinstalled(x)]
+	# if len(names_to_install) > 0:
+	# 	utils.install_packages(robjects.StrVector(names_to_install))
+	#
+	# rpackages.importr('rmetalog')
+	# e = time.time()
+	# print(e-s,'seconds to create R instance and import packages')
+	#
+	# r_metalog_func = robjects.r('''
+	# function(x,probs,boundedness,bounds,term_limit,step_len) {
+	# 		  metalog(
+	# 			  x = x,
+	# 			  probs = probs,
+	# 			  boundedness = boundedness,
+	# 			  bounds = bounds,
+	# 			  term_limit = term_limit,
+	# 			  step_len=step_len)
+	# 			}
+	# ''')
+	#
+	# r_pmetalog_func = robjects.r('''
+	# function (metalog_obj,q,term) {
+	# 	pmetalog(
+	# 		metalog_obj,
+	# 		q=q,
+	# 		term=term
+	# 	)
+	# }''')
+	#
+	# r_dmetalog_func = robjects.r('''
+	# function (metalog_obj,q,term) {
+	# 	dmetalog(
+	# 		metalog_obj,
+	# 		q=q,
+	# 		term=term
+	# 	)
+	# }''')
+	#
+	# r_qmetalog_func = robjects.r('''
+	# 	function (metalog_obj,y,term) {
+	# 		qmetalog(
+	# 			metalog_obj,
+	# 			y=y,
+	# 			term=term
+	# 		)
+	# 	}''')
+	#
+	# r_metalog_samples_func = robjects.r('''
+	# 		function (metalog_obj,n,term) {
+	# 			rmetalog(
+	# 				metalog_obj,
+	# 				n=n,
+	# 				term=term
+	# 			)
+	# 		}''')
+	#
+	# r_x = robjects.FloatVector([q for p, q in quantiles])
+	# r_probs = robjects.FloatVector([p for p, q in quantiles])
+	# r_term_limit = robjects.FloatVector([term])
+	# r_n_samples = robjects.FloatVector([nsamples])
+	# r_step_len = robjects.FloatVector([step_len])
+	# r_bounds = robjects.FloatVector(bounds)
+	#
+	# s = time.time()
+	# r_metalog_obj = r_metalog_func(x=r_x, probs=r_probs, boundedness=boundedness, term_limit=r_term_limit,
+	# 							   step_len=r_step_len, bounds=r_bounds)
+	# e = time.time()
+	# print(e-s,"seconds to fit metalog object")
 
-	# select a mirror for R packages
-	utils.chooseCRANmirror(ind=1)  # select the first mirror in the list
-
-	# install and import rmetalog
-	packnames = ['rmetalog']
-	names_to_install = [x for x in packnames if not rpackages.isinstalled(x)]
-	if len(names_to_install) > 0:
-		utils.install_packages(robjects.StrVector(names_to_install))
-
-	rpackages.importr('rmetalog')
-	e = time.time()
-	print(e-s,'seconds to create R instance and import packages')
-
-	r_metalog_func = robjects.r('''
-	function(x,probs,boundedness,bounds,term_limit,step_len) {
-			  metalog(
-				  x = x,
-				  probs = probs,
-				  boundedness = boundedness,
-				  bounds = bounds,
-				  term_limit = term_limit,
-				  step_len=step_len)
-				}
-	''')
-
-	r_pmetalog_func = robjects.r('''
-	function (metalog_obj,q,term) {
-		pmetalog(
-			metalog_obj,
-			q=q,
-			term=term
-		)
-	}''')
-
-	r_dmetalog_func = robjects.r('''
-	function (metalog_obj,q,term) {
-		dmetalog(
-			metalog_obj,
-			q=q,
-			term=term
-		)
-	}''')
-
-	r_qmetalog_func = robjects.r('''
-		function (metalog_obj,y,term) {
-			qmetalog(
-				metalog_obj,
-				y=y,
-				term=term
-			)
-		}''')
-
-	r_metalog_samples_func = robjects.r('''
-			function (metalog_obj,n,term) {
-				rmetalog(
-					metalog_obj,
-					n=n,
-					term=term
-				)
-			}''')
-
-	r_x = robjects.FloatVector([q for p, q in quantiles])
-	r_probs = robjects.FloatVector([p for p, q in quantiles])
-	r_term_limit = robjects.FloatVector([term])
-	r_n_samples = robjects.FloatVector([nsamples])
-	r_step_len = robjects.FloatVector([step_len])
-	r_bounds = robjects.FloatVector(bounds)
-
-	s = time.time()
-	r_metalog_obj = r_metalog_func(x=r_x, probs=r_probs, boundedness=boundedness, term_limit=r_term_limit,
-								   step_len=r_step_len, bounds=r_bounds)
-	e = time.time()
-	print(e-s,"seconds to fit metalog object")
 
 
-	if domain_override is not None:
-		domain_to_plot_left,domain_to_plot_right = domain_override
-	else:
-		domain_to_plot_left,domain_to_plot_right = r_qmetalog_func(metalog_obj=r_metalog_obj, y=robjects.FloatVector([0.01,0.99]), term=r_term_limit)
-	domain_to_plot = np.linspace(domain_to_plot_left,domain_to_plot_right,50)
 
-	r_domain = robjects.FloatVector(domain_to_plot)
-	r_quantiles_out = robjects.FloatVector(quantiles_out)
+	import pymetalog
 
-	s = time.time()
-	cdf_values = r_pmetalog_func(metalog_obj=r_metalog_obj, q=r_domain, term=r_term_limit)
-	pdf_values = r_dmetalog_func(metalog_obj=r_metalog_obj, q=r_domain, term=r_term_limit)
-	e = time.time()
-	print(e-s,"seconds to compute cdf and pdf")
+	ps = [p for p,q in quantiles]
+	qs = [q for p,q in quantiles]
+	metalog_obj = pymetalog.metalog(x=qs, probs=ps, term_limit=term)
 
-	quantiles_values = r_qmetalog_func(metalog_obj=r_metalog_obj, y=r_quantiles_out, term=r_term_limit)
+
+	def pdf(x):
+		return pymetalog.dmetalog(metalog_obj,x,term=term)
+
+	def cdf(x):
+		return pymetalog.pmetalog(metalog_obj,x,term=term)
+
+	def ppf(x):
+		return pymetalog.qmetalog(metalog_obj,[x],term=term)
+
+	def rvs(n):
+		return pymetalog.rmetalog(metalog_obj,n=n,term=term)
+
+	# r_domain = robjects.FloatVector(domain_to_plot)
+	# r_quantiles_out = robjects.FloatVector(quantiles_out)
+	#
+	# s = time.time()
+	# cdf_values = r_pmetalog_func(metalog_obj=r_metalog_obj, q=r_domain, term=r_term_limit)
+	# pdf_values = r_dmetalog_func(metalog_obj=r_metalog_obj, q=r_domain, term=r_term_limit)
+	# e = time.time()
+	# print(e-s,"seconds to compute cdf and pdf")
+	#
+	# quantiles_values = r_qmetalog_func(metalog_obj=r_metalog_obj, y=r_quantiles_out, term=r_term_limit)
 
 	# create ouput for metalog
-	fig, (ax1, ax2) = plt.subplots(2,1)
-	ax1.plot([x[1] for x in quantiles],[x[0] for x in quantiles],'b+')
-
-	ax1.plot(domain_to_plot,cdf_values)
-	ax1.set_title('CDF')
-	ax2.plot(domain_to_plot,pdf_values)
-	ax2.set_title('PDF')
-	plt.show()
-
-	print("quantiles:")
-	for i in range(len(quantiles_out)):
-		print(quantiles_out[i],quantiles_values[i])
-
-	print("samples:")
-	print([i for i in r_metalog_samples_func(metalog_obj=r_metalog_obj, n=r_n_samples, term=r_term_limit)])
+	# fig, (ax1, ax2) = plt.subplots(2,1)
+	# ax1.plot([x[1] for x in quantiles],[x[0] for x in quantiles],'b+')
+	#
+	# ax1.plot(domain_to_plot,cdf_values)
+	# ax1.set_title('CDF')
+	# ax2.plot(domain_to_plot,pdf_values)
+	# ax2.set_title('PDF')
+	# plt.show()
+	#
+	# print("quantiles:")
+	# for i in range(len(quantiles_out)):
+	# 	print(quantiles_out[i],quantiles_values[i])
+	#
+	# print("samples:")
+	# print([i for i in r_metalog_samples_func(metalog_obj=r_metalog_obj, n=r_n_samples, term=r_term_limit)])
 
 if family =='normal':
 	if quantiles:
@@ -286,31 +301,31 @@ if family == 'lognormal':
 	def rvs(n):
 		return stats.lognorm.rvs(size=n,s=sigma,scale=math.exp(mu))
 
-# create ouput for non-metalog
-if family != 'metalog':
-	def guess_domain_to_plot(points=50):
-		if domain_override is not None:
-			left,right = domain_override
-		else:
-			left, right = ppf(0.01), ppf(0.99)
-		return np.linspace(left, right, points)
 
-	domain_to_plot = guess_domain_to_plot()
+def guess_domain_to_plot(points=50):
+	if domain_override is not None:
+		left,right = domain_override
+	else:
+		left, right = ppf(0.01), ppf(0.99)
+		left,right = float(left),float(right)
+	return np.linspace(left, right, points)
 
-	fig, (ax1, ax2) = plt.subplots(2,1)
-	ax1.plot(domain_to_plot,cdf(domain_to_plot))
-	if quantiles:
-		ax1.plot([x[1] for x in quantiles],[x[0] for x in quantiles],'b+')
-	ax1.set_title('CDF')
-	ax2.plot(domain_to_plot,pdf(domain_to_plot))
-	ax2.set_title('PDF')
-	plt.show()
+domain_to_plot = guess_domain_to_plot()
 
-	print("quantiles:")
-	for x in quantiles_out:
-		print(x,ppf(x))
+fig, (ax1, ax2) = plt.subplots(2,1)
+ax1.plot(domain_to_plot,cdf(domain_to_plot))
+if quantiles:
+	ax1.plot([x[1] for x in quantiles],[x[0] for x in quantiles],'b+')
+ax1.set_title('CDF')
+ax2.plot(domain_to_plot,pdf(domain_to_plot))
+ax2.set_title('PDF')
+plt.show()
 
-	print("samples:")
-	print([i for i in rvs(nsamples)])
+print("quantiles:")
+for x in quantiles_out:
+	print(x,ppf(x))
+
+print("samples:")
+print([i for i in rvs(nsamples)])
 
 
