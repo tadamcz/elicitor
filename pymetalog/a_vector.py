@@ -18,7 +18,7 @@ def a_vector_OLS_and_LP(m_dict,
            diff_error = .001,
            diff_step = 0.001):
 
-    """ Main workhorse function of pymetalog_g package.
+    """ Main workhorse function of pymetalog package.
         Called during metalog.__init__ method call.
 
     Args:
@@ -169,10 +169,10 @@ def a_vector_OLS_and_LP(m_dict,
 
         # build a y vector for smaller data sets
         if len(z) < 100:
-            y2 = np.linspace(step_len, 1 - step_len, ((1 - step_len) / step_len))
+            y2 = np.linspace(step_len, 1 - step_len, int((1 - step_len) / step_len))
             tailstep = step_len / 10
-            y1 = np.linspace(tailstep, (min(y2) - tailstep), ((min(y2) - tailstep) / tailstep))
-            y3 = np.linspace((max(y2) + tailstep), (max(y2) + tailstep * 9), ((tailstep * 9) / tailstep))
+            y1 = np.linspace(tailstep, (min(y2) - tailstep), int((min(y2) - tailstep) / tailstep))
+            y3 = np.linspace((max(y2) + tailstep), (max(y2) + tailstep * 9), int((tailstep * 9) / tailstep))
             y = np.hstack((y1, y2, y3))
 
         # Get the dict and quantile values back for validation
